@@ -1,0 +1,36 @@
+{{- $sizeConfig := include "cpi-delta.getSizeConfig" . | fromYaml }}
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ .Values.global.customer.name }}-{{ .Values.product }}
+  namespace: customer-{{ .Values.global.customer.name }}
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: {{ .Values.global.customer.name }}-{{ .Values.product }}
+  template:
+    metadata:
+      labels:
+        app: {{ .Values.global.customer.name }}-{{ .Values.product }}
+      annotations:
+        kubernetes.io/ingress-bandwidth: {{ $sizeConfig.ingressBandwidth }}
+        kubernetes.io/egress-bandwidth: {{ $sizeConfig.egressBandwidth }}
+    spec:
+      containers:
+      - name: nginx
+        image: nginx:latest
+        resources:
+          limits:
+            cpu: "{{ $sizeConfig.cpuLimit }}"
+            memory: "{{ $sizeConfig.memoryLimit }}"
+          requests:
+            cpu: "{{ $sizeConfig.cpuRequest }}"
+            memory: "{{ $sizeConfig.memoryRequest }}"
+        volumeMounts:
+        - name: customer-data
+          mountPath: /mnt/mfs/customers/{{ .Values.global.customer.name }}/{{ .Values.product }}
+      volumes:
+      - name: customer-data
+        persistentVolumeClaim:
+          claimName: {{ .Values.global.customer.name }}-{{ .Values.product }}-storage
