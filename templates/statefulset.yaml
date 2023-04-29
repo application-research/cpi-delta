@@ -1,0 +1,73 @@
+{{- $sizeConfig := include "cpi-delta.getSizeConfig" . | fromYaml }}
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: {{ .Values.global.customer.name }}-{{ .Values.product }}
+  namespace: customer-{{ .Values.global.customer.name }}
+  annotations:
+    argocd.argoproj.io/sync-wave: "10"
+  labels:
+    app: {{ .Values.global.customer.name }}-{{ .Values.product }}
+spec:
+  serviceName: {{ .Values.global.customer.name }}-{{ .Values.product }}
+  podManagementPolicy: "Parallel"
+  replicas: 3
+  selector:
+    matchLabels:
+      app: {{ .Values.global.customer.name }}-{{ .Values.product }}
+  template:
+    metadata:
+      labels:
+        app: {{ .Values.global.customer.name }}-{{ .Values.product }}
+      annotations:
+        kubernetes.io/ingress-bandwidth: {{ $sizeConfig.ingressBandwidth }}
+        kubernetes.io/egress-bandwidth: {{ $sizeConfig.egressBandwidth }}
+    spec:
+      containers:
+      - name: {{ .Values.product }}
+        image: {{ .Values.image.repository }}:{{ .Values.image.tag }}
+        workingDir: /data
+        command: ["/app/delta", "daemon"]
+        envFrom:
+          - configMapRef:
+              name: {{ .Values.global.customer.name }}-{{ .Values.product }}-config
+        #command: ["/bin/sh", "-c", "while true; do sleep 30; done"]
+        ports:
+          - name: delta-http
+            containerPort: 1414
+            protocol: TCP
+        readinessProbe:
+          httpGet:
+            path: /ping
+            port: delta-http
+        resources:
+          limits:
+            cpu: "{{ $sizeConfig.cpuLimit }}"
+            memory: "{{ $sizeConfig.memoryLimit }}"
+          requests:
+            cpu: "{{ $sizeConfig.cpuRequest }}"
+            memory: "{{ $sizeConfig.memoryRequest }}"
+        volumeMounts:
+          - name: storage
+            mountPath: /storage
+          - name: {{ .Values.global.customer.name }}-{{ .Values.product }}-db
+            mountPath: /data
+          - name: env-file
+            mountPath: /data/.env
+            subPath: config.env
+      volumes:
+      - name: env-file
+        configMap:
+          name: {{ .Values.global.customer.name }}-{{ .Values.product }}-config
+      - name: storage
+        persistentVolumeClaim:
+          claimName: {{ .Values.global.customer.name }}-{{ .Values.product }}-storage
+  volumeClaimTemplates:
+    - metadata:
+        name: {{ .Values.global.customer.name }}-{{ .Values.product }}-db
+      spec:
+        accessModes:
+          - ReadWriteOnce
+        resources:
+          requests:
+            storage: "1Gi"
