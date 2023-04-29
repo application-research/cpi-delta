@@ -11,8 +11,8 @@ data:
     NODE_NAME=delta-node
     NODE_DESCRIPTION=Experimental Deal Maker
     NODE_TYPE=delta-main
-    REPO=/storage/delta/whypfs
-    DELTA_WALLET_DIR=/storage/delta/wallet
+    REPO=/storage/whypfs
+    DELTA_WALLET_DIR=/storage/wallet
     # Database configuration
     MODE=cluster
     {{- $dbName := "deltadb" }}
