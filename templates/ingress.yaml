@@ -18,7 +18,7 @@ spec:
           service:
             name: {{ .Values.global.customer.name }}-{{ .Values.product }}
             port:
-              name: http
+              name: delta-http
   tls:
   - hosts:
     - {{ .Values.global.products.delta.ingressName }}
