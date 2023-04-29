@@ -6,17 +6,14 @@ metadata:
   annotations:
     argocd.argoproj.io/sync-wave: "10"
 data:
-  config.env: |
-    # Node info
-    NODE_NAME=delta-node
-    NODE_DESCRIPTION=Experimental Deal Maker
-    NODE_TYPE=delta-main
-    REPO=/storage/whypfs
-    DELTA_WALLET_DIR=/storage/wallet
-    # Database configuration
-    MODE=cluster
-    {{- $dbName := "deltadb" }}
-    {{- $secretNamespace := printf "customer-%s" .Values.global.customer.name }}
-    DB_NAME={{ $dbName }}
-    {{- $decodedPassword := .Values.global.customer.delta_db_password | b64dec }}
-    {{ printf "DB_DSN=postgres://delta:%s@delta.dbfws.%s/deltadb" $decodedPassword $secretNamespace }}
+  NODE_NAME: delta-node
+  NODE_DESCRIPTION: Experimental Deal Maker
+  NODE_TYPE: delta-main
+  REPO: /storage/whypfs
+  DELTA_WALLET_DIR: /storage/wallet
+  MODE: cluster
+  {{- $dbName := "deltadb" }}
+  {{- $secretNamespace := printf "customer-%s" .Values.global.customer.name }}
+  DB_NAME: {{ $dbName }}
+  {{- $decodedPassword := .Values.global.customer.delta_db_password | b64dec }}
+  DB_DSN: {{ printf "postgres://delta:%s@dbfws.%s/deltadb" $decodedPassword $secretNamespace }}
