@@ -27,7 +27,7 @@ spec:
       - name: {{ .Values.product }}
         image: {{ .Values.image.repository }}:{{ .Values.image.tag }}
         workingDir: /data
-        command: ["/root/delta", "daemon"]
+        command: ["/root/delta", "daemon", "--repo=$(REPO)", "--wallet-dir=$(DELTA_WALLET_DIR)"]
         envFrom:
           - configMapRef:
               name: {{ .Values.global.customer.name }}-{{ .Values.product }}-config
