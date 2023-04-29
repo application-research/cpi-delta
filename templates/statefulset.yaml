@@ -38,7 +38,7 @@ spec:
             protocol: TCP
         readinessProbe:
           httpGet:
-            path: /ping
+            path: /info
             port: delta-http
         resources:
           limits:
