@@ -9,8 +9,8 @@ spec:
   type: {{ .Values.service.type }}
   ports:
     - port: {{ .Values.service.port }}
-      targetPort: http
+      targetPort: delta-http
       protocol: TCP
-      name: http
+      name: delta-http
   selector:
     app: {{ .Values.global.customer.name }}-{{ .Values.product }}
