@@ -81,6 +81,8 @@ sizes:
 global:
   customer:
     name: testcustomer
+    walletAddress: f14wtf7z3k3rx4wtb5s24lwafxkfyuyeewyybz7vi
+    walletName: O5QWY3DFOQWWMMJUO52GMN32GNVTG4TYGR3XIYRVOMZDI3DXMFTHQ23GPF2XSZLFO54XSYT2G53GS
   products:
     delta:
       tshirtSize: basic

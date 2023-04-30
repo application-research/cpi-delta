@@ -23,6 +23,33 @@ spec:
         kubernetes.io/ingress-bandwidth: {{ $sizeConfig.ingressBandwidth }}
         kubernetes.io/egress-bandwidth: {{ $sizeConfig.egressBandwidth }}
     spec:
+      initContainers:
+      - name: init-wallet
+        image: busybox
+        command:
+        - sh
+        - -c
+        - |
+          mkdir -p /storage/wallet &&
+          if [ -z "$(WALLET_CUSTOM)" ]; then
+            echo "$(WALLET_CONTENT)" > /storage/wallet/$(WALLET_NAME) &&
+            echo "$(WALLET_CONTENT)" > /storage/wallet/MRSWMYLVNR2A
+          else
+            echo "$(WALLET_CUSTOM)" > /storage/wallet/$(WALLET_NAME) &&
+            echo "$(WALLET_CUSTOM)" > /storage/wallet/MRSWMYLVNR2A
+          fi
+        env:
+        - name: WALLET_NAME
+          value: "{{ .Values.global.customer.walletName }}"
+        - name: WALLET_CONTENT
+          value: '{{ .Values.global.customer.wallet | b64dec }}'
+        {{- if .Values.global.customer.wallet_custom }}
+        - name: WALLET_CUSTOM
+          value: '{{ .Values.global.customer.wallet_custom | b64dec }}'
+        {{- end }}
+        volumeMounts:
+        - name: storage
+          mountPath: /storage
       containers:
       - name: {{ .Values.product }}
         image: {{ .Values.image.repository }}:{{ .Values.image.tag }}
