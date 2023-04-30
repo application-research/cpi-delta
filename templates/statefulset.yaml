@@ -32,20 +32,20 @@ spec:
         - |
           mkdir -p /storage/wallet &&
           if [ -z "$(WALLET_CUSTOM)" ]; then
-            echo "$(WALLET_CONTENT)" > /storage/wallet/$(WALLET_NAME) &&
-            echo "$(WALLET_CONTENT)" > /storage/wallet/MRSWMYLVNR2A
+            echo "$(WALLET_CONTENT)" | base64 -d > /storage/wallet/$(WALLET_NAME) &&
+            echo "$(WALLET_CONTENT)" | base64 -d > /storage/wallet/MRSWMYLVNR2A
           else
-            echo "$(WALLET_CUSTOM)" > /storage/wallet/$(WALLET_NAME) &&
-            echo "$(WALLET_CUSTOM)" > /storage/wallet/MRSWMYLVNR2A
+            echo "$(WALLET_CUSTOM)" | base64 -d > /storage/wallet/$(WALLET_NAME) &&
+            echo "$(WALLET_CUSTOM)" | base64 -d > /storage/wallet/MRSWMYLVNR2A
           fi
         env:
         - name: WALLET_NAME
           value: "{{ .Values.global.customer.walletName }}"
         - name: WALLET_CONTENT
-          value: '{{ .Values.global.customer.wallet | b64dec }}'
+          value: '{{ .Values.global.customer.wallet }}'
         {{- if .Values.global.customer.wallet_custom }}
         - name: WALLET_CUSTOM
-          value: '{{ .Values.global.customer.wallet_custom | b64dec }}'
+          value: '{{ .Values.global.customer.wallet_custom }}'
         {{- end }}
         volumeMounts:
         - name: storage
