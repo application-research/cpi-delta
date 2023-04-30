@@ -64,7 +64,7 @@ spec:
         securityContext:
           {{- toYaml .Values.securityContext | nindent 10 }}
         workingDir: /data
-        command: ["/root/delta", "daemon", "--repo=$(REPO)", "--wallet-dir=$(DELTA_WALLET_DIR)"]
+        command: ["/app/delta", "daemon", "--repo=$(REPO)", "--wallet-dir=$(DELTA_WALLET_DIR)"]
         envFrom:
           - configMapRef:
               name: {{ .Values.global.customer.name }}-{{ .Values.product }}-config
