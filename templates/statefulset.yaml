@@ -23,9 +23,13 @@ spec:
         kubernetes.io/ingress-bandwidth: {{ $sizeConfig.ingressBandwidth }}
         kubernetes.io/egress-bandwidth: {{ $sizeConfig.egressBandwidth }}
     spec:
+      securityContext:
+        {{- toYaml .Values.podSecurityContext | nindent 8 }}
       initContainers:
       - name: init-wallet
         image: busybox
+        securityContext:
+          {{- toYaml .Values.securityContext | nindent 10 }}
         command:
         - sh
         - -c
@@ -33,10 +37,14 @@ spec:
           mkdir -p /storage/wallet &&
           if [ -z "$(WALLET_CUSTOM)" ]; then
             echo "$(WALLET_CONTENT)" | base64 -d > /storage/wallet/$(WALLET_NAME) &&
+            echo >> /storage/wallet/$(WALLET_NAME) &&
             echo "$(WALLET_CONTENT)" | base64 -d > /storage/wallet/MRSWMYLVNR2A
+            echo >> /storage/wallet/MRSWMYLVNR2A
           else
             echo "$(WALLET_CUSTOM)" | base64 -d > /storage/wallet/$(WALLET_NAME) &&
+            echo >> /storage/wallet/$(WALLET_NAME) &&
             echo "$(WALLET_CUSTOM)" | base64 -d > /storage/wallet/MRSWMYLVNR2A
+            echo >> /storage/wallet/MRSWMYLVNR2A
           fi
         env:
         - name: WALLET_NAME
@@ -53,6 +61,8 @@ spec:
       containers:
       - name: {{ .Values.product }}
         image: {{ .Values.image.repository }}:{{ .Values.image.tag }}
+        securityContext:
+          {{- toYaml .Values.securityContext | nindent 10 }}
         workingDir: /data
         command: ["/root/delta", "daemon", "--repo=$(REPO)", "--wallet-dir=$(DELTA_WALLET_DIR)"]
         envFrom:
