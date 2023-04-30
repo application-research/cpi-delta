@@ -26,6 +26,15 @@ spec:
       securityContext:
         {{- toYaml .Values.podSecurityContext | nindent 8 }}
       initContainers:
+      - name: init-storage
+        image: busybox
+        command: ["sh", "-c", "chown 1337:1337 /storage/"]
+        securityContext:
+          runAsUser: 0
+          runAsGroup: 0
+        volumeMounts:
+        - name: storage
+          mountPath: /storage
       - name: init-wallet
         image: busybox
         securityContext:
@@ -35,6 +44,7 @@ spec:
         - -c
         - |
           mkdir -p /storage/wallet &&
+          umask 0077 &&
           if [ -z "$(WALLET_CUSTOM)" ]; then
             echo "$(WALLET_CONTENT)" | base64 -d > /storage/wallet/$(WALLET_NAME) &&
             echo >> /storage/wallet/$(WALLET_NAME) &&
