@@ -62,7 +62,7 @@ tshirtSize: basic
 sizes:
   basic:
     cpuLimit: "1000m"
-    cpuRequest: "500m"
+    cpuRequest: "100m"
     memoryLimit: "2Gi"
     memoryRequest: "1Gi"
     storage: "20Ti"
@@ -70,7 +70,7 @@ sizes:
     egressBandwidth: "250M"
   heavy:
     cpuLimit: "8000m"
-    cpuRequest: "2000m"
+    cpuRequest: "200m"
     memoryLimit: "64Gi"
     memoryRequest: "16Gi"
     storage: "100Ti"
