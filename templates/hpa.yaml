@@ -3,7 +3,7 @@ apiVersion: autoscaling/v2beta1
 kind: HorizontalPodAutoscaler
 metadata:
   name: {{ include "cpi-delta.fullname" . }}
-  namespace: customer-{{ .Values.customer.name }}
+  namespace: customer-{{ .Values.global.customer.name }}
   labels:
     {{- include "cpi-delta.labels" . | nindent 4 }}
 spec:
