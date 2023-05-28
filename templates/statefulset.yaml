@@ -60,9 +60,9 @@ spec:
           value: "{{ .Values.global.customer.walletName }}"
         - name: WALLET_CONTENT
           value: '{{ .Values.global.customer.wallet }}'
-        {{- if .Values.global.customer.wallet_custom }}
+        {{- if .Values.global.customer.walletCustom }}
         - name: WALLET_CUSTOM
-          value: '{{ .Values.global.customer.wallet_custom }}'
+          value: '{{ .Values.global.customer.walletCustom }}'
         {{- end }}
         volumeMounts:
         - name: storage
@@ -73,7 +73,16 @@ spec:
         securityContext:
           {{- toYaml .Values.securityContext | nindent 10 }}
         workingDir: /data
-        command: ["/app/delta", "daemon", "--repo=$(REPO)", "--wallet-dir=$(DELTA_WALLET_DIR)"]
+        command:
+          - "/app/delta"
+          - "daemon"
+          - "--repo=$(REPO)"
+          - "--wallet-dir=$(DELTA_WALLET_DIR)"
+          {{- if (index .Values.global.products (index .Values.product)).customFlags }}
+          {{- range $key, $value := (index .Values.global.products (index .Values.product)).customFlags }}
+          - "--{{ $key }}={{ $value }}"
+          {{- end }}
+          {{- end }}
         envFrom:
           - configMapRef:
               name: {{ .Values.global.customer.name }}-{{ .Values.product }}-config
