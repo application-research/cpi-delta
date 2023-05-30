@@ -27,5 +27,5 @@ data:
   {{- $decodedPassword := (include "decodePassword" .Values.global.customer.delta_db_password) }}
   DB_DSN: {{ printf "postgres://delta:%s@dbfws.%s/deltadb" $decodedPassword $secretNamespace }}
   {{- if (index .Values.global.products (index .Values.product)).customEnv }}
-  {{ (index .Values.global.products (index .Values.product)).customEnv }}
+{{ (index .Values.global.products (index .Values.product)).customEnv | indent 2 }}
   {{- end }}
