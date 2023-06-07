@@ -87,7 +87,3 @@ global:
     delta:
       tshirtSize: basic
       ingressName: testcustomer.delta.estuary.tech
-      customEnv: |
-        LOTUS_API: http://api.calibration.node.glif.io
-      customFlags:
-        network: test
